@@ -41,13 +41,6 @@ type InferenceRunInput struct {
 	AddedAt        time.Time
 }
 
-func (s InferenceRun) OutboxView() InferenceRun {
-	view := s
-	view.Reference = ""
-	view.TotalEstimatedRows = 0
-	return view
-}
-
 func (s InferenceRun) Validate() error {
 	if strings.TrimSpace(s.WorkspaceID) == "" || strings.TrimSpace(s.SourceZoneID) == "" || strings.TrimSpace(s.TargetZoneID) == "" {
 		return FieldError{Field: "run", Message: "workspace, source zone and target zone are required"}

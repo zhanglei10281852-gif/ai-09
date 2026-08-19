@@ -154,11 +154,7 @@ func (s *InferenceService) PlanInferenceRun(ctx context.Context, input PlanInfer
 		if err := tx.PutIdempotency(ctx, repository.IdempotencyRecord{Scope: "plan-run", Key: input.IdempotencyKey, RequestHash: hash, ResponseCode: 201, ResponseBody: body, ExpiresAt: now.Add(24 * time.Hour), CreatedAt: now}); err != nil {
 			return err
 		}
-		outboxBody, err := idempotency.Encode(run.OutboxView())
-		if err != nil {
-			return err
-		}
-		if err := tx.InsertJob(ctx, domain.OutboxJob{ID: identity.New("job"), Kind: "inference_run_planned", AggregateID: run.ID, Payload: outboxBody, Status: domain.JobPending, MaxAttempts: 5, AvailableAt: now, CreatedAt: now, UpdatedAt: now}); err != nil {
+		if err := tx.InsertJob(ctx, domain.OutboxJob{ID: identity.New("job"), Kind: "inference_run_planned", AggregateID: run.ID, Payload: body, Status: domain.JobPending, MaxAttempts: 5, AvailableAt: now, CreatedAt: now, UpdatedAt: now}); err != nil {
 			return err
 		}
 		return s.audit.Record(ctx, tx, "inference_run_planned", "inference_run", run.ID, "success", map[string]string{"snapshot_count": fmt.Sprint(len(batches))})
