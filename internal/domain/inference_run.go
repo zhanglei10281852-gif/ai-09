@@ -42,10 +42,7 @@ type InferenceRunInput struct {
 }
 
 func (s InferenceRun) OutboxView() InferenceRun {
-	view := s
-	view.Reference = ""
-	view.TotalEstimatedRows = 0
-	return view
+	return s
 }
 
 func (s InferenceRun) Validate() error {
